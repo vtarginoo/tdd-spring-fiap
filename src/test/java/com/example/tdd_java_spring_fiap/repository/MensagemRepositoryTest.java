@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -88,7 +89,24 @@ public class MensagemRepositoryTest {
 
         //Assert
         verify(mensagemRepository, times(1)).deleteById(any(UUID.class));
+    }
 
+    @Test
+    void devePermitirListarMensagem() {
+
+        var mensagem1 = gerarMensagem();
+        var mensagem2 = gerarMensagem();
+
+        // Arrange
+        var mensagemList = Arrays.asList(mensagem1,mensagem2);
+        when(mensagemRepository.findAll()).thenReturn(mensagemList);
+
+        //Act
+        var mensagensRecebidas = mensagemRepository.findAll();
+
+        //Assert
+        assertThat(mensagensRecebidas).hasSize(2).containsExactlyInAnyOrder(mensagem1,mensagem2);
+        verify(mensagemRepository, times(1)).findAll();
     }
 
     private Mensagem gerarMensagem() {
@@ -96,9 +114,8 @@ public class MensagemRepositoryTest {
                 .usuario("José")
                 .conteudo("conteúdo da mensagem")
                 .build();
-
-
     }
+
 
 
 }
